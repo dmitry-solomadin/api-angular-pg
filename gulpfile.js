@@ -1,8 +1,7 @@
 var gulp = require('gulp'),
-gutil = require('gulp-util'),
 connect = require('gulp-connect'),
-browserify = require('browserify'),
-source = require('vinyl-source-stream'),
+inject = require('gulp-inject'),
+mainBowerFiles = require('gulp-main-bower-files'),
 concat = require('gulp-concat'),
 clean = require('gulp-clean');
 
@@ -13,15 +12,30 @@ gulp.task('connect', function () {
   })
 });
 
-gulp.task('browserify', function() {
-  // Single point of entry (make sure not to src ALL your files, browserify will figure it out for you)
-  browserify('app/scripts/app.js')
-    .bundle()
-    .pipe(source('bundle.js'))
-    .pipe(gulp.dest('dist/js'))
+gulp.task('main-bower-files', function() {
+  return gulp.src('./bower.json')
+    .pipe(mainBowerFiles())
+    .pipe(gulp.dest('dist/libs'));
 });
 
-gulp.task('views', function() {
+// I think that this is not very efficient
+gulp.task('copy-sources-dist', function() {
+  var sources = gulp.src(['./app/scripts/**/*.js']);
+  return sources.pipe(gulp.dest('dist/scripts/'));
+});
+
+gulp.task('inject-index', function () {
+  var target = gulp.src('app/index.html');
+  // It's not necessary to read the files (will speed up things), we're only after their paths:
+  var sources = gulp.src(['./app/scripts/**/*.js', './app/styles/**/*.css'], {read: false});
+  var libSources = gulp.src(['./dist/libs/**/*.js'], {read: false});
+
+  return target.pipe(inject(sources, {ignorePath: 'app'}))
+    .pipe(inject(libSources, {ignorePath: 'dist', starttag: '<!-- inject:lib:js -->'}))
+    .pipe(gulp.dest('./dist'));
+});
+
+gulp.task('build-views', function() {
   // Get our index.html
   gulp.src('app/index.html')
     // And put it in the dist folder
@@ -35,14 +49,12 @@ gulp.task('views', function() {
 
 gulp.task('watch', function() {
   // Watch our scripts
-  gulp.watch(['app/scripts/*.js', 'app/scripts/**/*.js'],[
-    'browserify'
-  ]);
-  gulp.watch(['app/index.html', 'app/views/**/*.html'], [
-    'views'
-  ]);
+  gulp.watch(['app/scripts/*.js', 'app/scripts/**/*.js'], ['build-scripts']);
+  gulp.watch(['app/index.html', 'app/views/**/*.html'], ['build-views']);
 });
 
-gulp.task('build', ['browserify', 'views']);
+gulp.task('build-scripts', ['copy-sources-dist', 'inject-index']);
+
+gulp.task('build', ['main-bower-files', 'build-scripts', 'build-views']);
 
 gulp.task('default', ['build', 'connect', 'watch']);
