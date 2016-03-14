@@ -1,9 +1,7 @@
 var gulp = require('gulp'),
 connect = require('gulp-connect'),
 inject = require('gulp-inject'),
-mainBowerFiles = require('gulp-main-bower-files'),
-concat = require('gulp-concat'),
-clean = require('gulp-clean');
+mainBowerFiles = require('gulp-main-bower-files');
 
 gulp.task('connect', function () {
   connect.server({
@@ -12,7 +10,7 @@ gulp.task('connect', function () {
   })
 });
 
-gulp.task('main-bower-files', function() {
+gulp.task('copy-bower-libs', function() {
   return gulp.src('./bower.json')
     .pipe(mainBowerFiles())
     .pipe(gulp.dest('dist/libs'));
@@ -53,6 +51,6 @@ gulp.task('watch', function() {
   gulp.watch(['app/index.html', 'app/views/**/*.html'], ['copy-views', 'inject-index']);
 });
 
-gulp.task('build', ['main-bower-files', 'copy-scripts', 'copy-views', 'inject-index']);
+gulp.task('build', ['copy-bower-libs', 'copy-scripts', 'copy-views', 'inject-index']);
 
 gulp.task('default', ['build', 'connect', 'watch']);
