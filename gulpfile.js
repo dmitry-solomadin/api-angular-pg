@@ -19,7 +19,7 @@ gulp.task('main-bower-files', function() {
 });
 
 // I think that this is not very efficient
-gulp.task('copy-sources-dist', function() {
+gulp.task('copy-scripts', function() {
   var sources = gulp.src(['./app/scripts/**/*.js']);
   return sources.pipe(gulp.dest('dist/scripts/'));
 });
@@ -35,7 +35,7 @@ gulp.task('inject-index', function () {
     .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('build-views', function() {
+gulp.task('copy-views', function() {
   // Get our index.html
   gulp.src('app/index.html')
     // And put it in the dist folder
@@ -49,12 +49,10 @@ gulp.task('build-views', function() {
 
 gulp.task('watch', function() {
   // Watch our scripts
-  gulp.watch(['app/scripts/*.js', 'app/scripts/**/*.js'], ['build-scripts']);
-  gulp.watch(['app/index.html', 'app/views/**/*.html'], ['build-views']);
+  gulp.watch(['app/scripts/*.js', 'app/scripts/**/*.js'], ['copy-scripts', 'inject-index']);
+  gulp.watch(['app/index.html', 'app/views/**/*.html'], ['copy-views', 'inject-index']);
 });
 
-gulp.task('build-scripts', ['copy-sources-dist', 'inject-index']);
-
-gulp.task('build', ['main-bower-files', 'build-scripts', 'build-views']);
+gulp.task('build', ['main-bower-files', 'copy-scripts', 'copy-views', 'inject-index']);
 
 gulp.task('default', ['build', 'connect', 'watch']);
