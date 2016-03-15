@@ -22,6 +22,11 @@ gulp.task('copy-scripts', function() {
   return sources.pipe(gulp.dest('dist/scripts/'));
 });
 
+gulp.task('copy-styles', function() {
+  var sources = gulp.src(['./app/styles/**/*.css']);
+  return sources.pipe(gulp.dest('dist/styles/'));
+});
+
 gulp.task('inject-index', function () {
   var target = gulp.src('app/index.html');
   // It's not necessary to read the files (will speed up things), we're only after their paths:
@@ -46,11 +51,12 @@ gulp.task('copy-views', function() {
 });
 
 gulp.task('watch', function() {
-  // Watch our scripts
+  // Watch scripts, styles & templates
   gulp.watch(['app/scripts/*.js', 'app/scripts/**/*.js'], ['copy-scripts', 'inject-index']);
+  gulp.watch(['app/styles/*.css', 'app/styles/**/*.css'], ['copy-styles', 'inject-index']);
   gulp.watch(['app/index.html', 'app/views/**/*.html'], ['copy-views', 'inject-index']);
 });
 
-gulp.task('build', ['copy-bower-libs', 'copy-scripts', 'copy-views', 'inject-index']);
+gulp.task('build', ['copy-bower-libs', 'copy-scripts', 'copy-styles', 'copy-views', 'inject-index']);
 
 gulp.task('default', ['build', 'connect', 'watch']);

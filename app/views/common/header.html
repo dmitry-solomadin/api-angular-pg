@@ -1,1 +1,37 @@
-<p>That's a header right there.</p>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      Angular PG
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <!--{{#if session.isAuthenticated}}
+        <li>
+          {{#link-to "posts.new"}}Write post{{/link-to}}
+        </li>
+        {{else}}
+        <li>
+          {{#link-to "sign_up"}}Sign Up{{/link-to}}
+        </li>
+        {{/if}}-->
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <!--{{#if session.isAuthenticated}}
+        <li>
+          <span>
+            Welcome, {{session.data.authenticated.data.first_name}} {{session.data.authenticated.data.last_name}}
+          </span>
+        </li>
+        {{/if}}
+        <li>
+          {{#if session.isAuthenticated}}
+          <a {{action 'invalidateSession'}} href="#">Logout</a>
+          {{else}}
+          {{#link-to 'login'}}Login{{/link-to}}
+          {{/if}}
+        </li>-->
+      </ul>
+    </div>
+  </div>
+</nav>
