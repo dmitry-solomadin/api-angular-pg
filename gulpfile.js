@@ -10,11 +10,29 @@ gulp.task('connect', function () {
   })
 });
 
-gulp.task('copy-bower-libs', function() {
+gulp.task('copy-css-bower-libs', function() {
+  // Copy js bower libs
   return gulp.src('./bower.json')
     .pipe(mainBowerFiles())
     .pipe(gulp.dest('dist/libs'));
 });
+
+gulp.task('copy-js-bower-libs', function() {
+  // Copy css bower libs
+  return gulp.src('./bower.json')
+    .pipe(mainBowerFiles('**/*.css', {
+      overrides: {
+        bootstrap: {
+          main: [
+            './dist/css/bootstrap.min.css'
+          ]
+        }
+      }
+    }))
+    .pipe(gulp.dest('dist/libs'));
+});
+
+gulp.task('copy-bower-libs', ['copy-css-bower-libs', 'copy-js-bower-libs']);
 
 // I think that this is not very efficient
 gulp.task('copy-scripts', function() {
@@ -31,10 +49,10 @@ gulp.task('inject-index', function () {
   var target = gulp.src('app/index.html');
   // It's not necessary to read the files (will speed up things), we're only after their paths:
   var sources = gulp.src(['./app/scripts/**/*.js', './app/styles/**/*.css'], {read: false});
-  var libSources = gulp.src(['./dist/libs/**/*.js'], {read: false});
+  var libSources = gulp.src(['./dist/libs/**/*.js', './dist/libs/**/*.css'], {read: false});
 
   return target.pipe(inject(sources, {ignorePath: 'app'}))
-    .pipe(inject(libSources, {ignorePath: 'dist', starttag: '<!-- inject:lib:js -->'}))
+    .pipe(inject(libSources, {ignorePath: 'dist', starttag: '<!-- inject:lib:{{ext}} -->'}))
     .pipe(gulp.dest('./dist'));
 });
 
