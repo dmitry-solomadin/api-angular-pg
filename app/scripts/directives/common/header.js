@@ -1,4 +1,4 @@
-angular.module('angularPg', [])
+angular.module('angularPg.directives', [])
   .directive('pgHeader', function() {
     return {
       restrict: 'E',
